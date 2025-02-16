@@ -26,7 +26,7 @@ COPY --from=builder /app /app
 
 RUN ls -lah && pwd
 # Expose the Next.js default port
-EXPOSE 3000
+EXPOSE 3001
 
 # Set environment variable to tell Next.js to run in production
 ENV NODE_ENV=production
