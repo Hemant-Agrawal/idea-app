@@ -25,8 +25,9 @@ export default function Home() {
     });
 
     if (res.ok) {
-      const newIdea = await res.json();
-      setIdeas((prevIdeas) => [newIdea, ...prevIdeas]);
+      fetch('/api/ideas')
+        .then((res) => res.json())
+        .then((data) => setIdeas(data));
     }
   };
 
@@ -34,13 +35,13 @@ export default function Home() {
     <div className="max-w-2xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Share Your Ideas</h1>
       <IdeaForm onSubmit={addIdea} />
-      <IdeaList 
-        ideas={ideas} 
+      <IdeaList
+        ideas={ideas}
         onIdeaUpdate={(updatedIdea) => {
-          setIdeas(ideas.map(idea => 
+          setIdeas(ideas.map(idea =>
             idea._id === updatedIdea._id ? updatedIdea : idea
           ));
-        }} 
+        }}
       />
     </div>
   );
