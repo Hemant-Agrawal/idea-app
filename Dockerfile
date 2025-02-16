@@ -1,34 +1,36 @@
-# Build stage
-FROM node:18-alpine AS builder
+# Use the official Node.js 18 image as the base image
+FROM node:20 AS builder
 
-# Set working directory
+ARG NEXT_PUBLIC_MONGO_URL
+
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+ADD . /app
 
-# Install dependencies
+# Build the Next.js app
 RUN npm install
 
-# Copy all files
-COPY . .
-
-# Build the application
 RUN npm run build
 
-# Production stage
-FROM node:18-alpine AS runner
+RUN ls -lah && pwd
 
+# Production image
+FROM node:20 AS runner
+
+# Set the working directory
 WORKDIR /app
 
-# Copy necessary files from builder
-COPY --from=builder /app/next.config.js ./
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Copy the built Next.js app and node_modules from the builder stage
+COPY --from=builder /app /app
 
-# Expose the port
+RUN ls -lah && pwd
+# Expose the Next.js default port
 EXPOSE 3000
 
-# Start the application
-CMD ["node", "server.js"] 
+# Set environment variable to tell Next.js to run in production
+ENV NODE_ENV=production
+
+# Start the Next.js server
+CMD ["npm", "run", "start"]
+

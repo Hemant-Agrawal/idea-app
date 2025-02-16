@@ -1,6 +1,6 @@
 import { MongoClient } from 'mongodb';
 
-const uri = 'mongodb://root:j51s5kf7ik0szp2@devinne-fcm6f14nzz.tcp-proxy-2212.dcdeploy.cloud:30878';
+const uri = process.env.NEXT_PUBLIC_MONGO_URL || '';
 let client: MongoClient | null = null;
 
 export async function connectToDatabase() {
