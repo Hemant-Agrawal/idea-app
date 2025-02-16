@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
-import { ObjectId } from 'mongodb';
+import { ObjectId, PushOperator } from 'mongodb';
+import { Idea } from '@/components/IdeaList';
 
-export async function POST(req: Request, { params }: { params: { id: string } }) {
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { text } = await req.json();
 
@@ -16,16 +17,16 @@ export async function POST(req: Request, { params }: { params: { id: string } })
 
     const result = await collection.findOneAndUpdate(
       { _id: new ObjectId(id) },
-      { $push: { comments: { text, createdAt: new Date() } } },
+      { $push: { comments: { text, createdAt: new Date() } } } as unknown as PushOperator<Idea>,
       { returnDocument: 'after' }
     );
 
-    if (!result._id) {
+    if (!result) {
       return NextResponse.json({ message: 'Idea not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ message: 'Comment added', idea: result.value });
+    return NextResponse.json({ message: 'Comment added', idea: result });
   } catch (error) {
-    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ message: 'Internal server error' + `${error}` }, { status: 500 });
   }
 } 

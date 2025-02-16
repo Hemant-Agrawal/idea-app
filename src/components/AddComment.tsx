@@ -27,7 +27,7 @@ const AddComment: React.FC<AddCommentProps> = ({ ideaId, onCommentAdded }) => {
                 throw new Error('Failed to add comment');
             }
 
-            const data = await response.json();
+            await response.json();
             onCommentAdded({text: commentText, createdAt: new Date()});
             setCommentText('');
         } catch (error) {
